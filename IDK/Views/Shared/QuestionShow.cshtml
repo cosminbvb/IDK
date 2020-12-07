@@ -1,0 +1,17 @@
+﻿<div class="panel-heading">@Model.Title</div>
+<div class="panel-body">
+    <strong>@Model.Content</strong>
+    <br />
+    <span class="label label-success">@Model.Date</span>
+    <br />
+    @foreach (var tag in Model.Tags)
+    {
+        <i class="glyphicon glyphicon-globe"></i> @tag.TagName
+    }
+    <hr />
+    <br />
+    <i class="glyphicon glyphicon-user"></i> <i>Asked by</i>
+    <strong> @Model.User.UserName </strong>
+    <hr>
+</div>
+

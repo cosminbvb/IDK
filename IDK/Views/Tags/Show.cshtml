@@ -1,0 +1,14 @@
+﻿@model IDK.Models.Tag
+
+<br />
+<h2>Name: @Model.TagName</h2>
+<br />
+<h3>Description: To do</h3>
+<br/>
+<p>Appearances: To do</p>
+<br />
+<form method="post" action="/Tags/Delete/@Model.Id">
+    @*form pt delete tag*@
+    @Html.HttpMethodOverride(HttpVerbs.Delete)
+    <button class="glyphicon glyphicon-trash" style="border: none; background: transparent" type="submit"></button>
+</form>

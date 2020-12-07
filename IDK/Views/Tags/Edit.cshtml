@@ -1,0 +1,13 @@
+﻿@model IDK.Models.Tag
+
+<h2>Edit</h2>
+
+<form method="post" action="/Tags/Edit/@Model.Id">
+    @Html.HttpMethodOverride(HttpVerbs.Put)
+    @Html.Label("TagName", "Tag Name")
+    <br />
+    @Html.Editor("TagName")
+    @Html.ValidationMessage("TagName", null, new { @class = "text-danger" })
+    <br /><br />
+    <button class="btn btn-success " type="submit">Submit</button>
+</form>
