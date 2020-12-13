@@ -1,0 +1,68 @@
+﻿@using IDK.Models
+@model Question
+
+<div class="sortare">
+    <p>sort by:</p>
+    
+
+
+    <form style="display:contents" action="/Questions/@ViewBag.Method?dateBox=@(ViewBag.Sort["dateBox"])">
+    @*<form style="display:contents" action="/Questions/@ViewBag.Method">*@
+
+            <input type="checkbox" id="dateBox" name="dateBox" value="dateCheck" @((ViewBag.Sort["dateBox"] == "dateCheck") ? "checked" : "")> 
+
+            @*<input type="checkbox" id="dateBox" name="dateBox" value="dateCheck">*@
+            <label for="dates">Date:</label>
+            <select name="dates" id="dates">
+                @try
+                {
+                    if (ViewBag.Sort["dates"].Equals("desc"))
+                    {
+                        <option value="asc">Asc</option>
+                        <option value="desc" selected>Desc</option>
+                    }
+                    else
+                    {
+                        <option value="asc" selected>Asc</option>
+                        <option value="desc">Desc</option>
+                    }
+                }
+                catch (Exception)
+                {
+                    <option value="asc" selected>Asc</option>
+                    <option value="desc">Desc</option>
+                }
+
+            </select>
+            <br>
+
+            <input type="checkbox" id="ansBox" name="ansBox" value="ansCheck"  @((ViewBag.Sort["ansBox"] == "ansCheck") ? "checked" : "") >
+
+            <label for="ansBox">Number of answers:</label>
+            <select name="ans" id="ans">
+                @try
+                {
+                    if (ViewBag.Sort["ans"].Equals("desc"))
+                    {
+                        <option value="asc">Asc</option>
+                        <option value="desc" selected>Desc</option>
+                    }
+                    else
+                    {
+                        <option value="asc" selected>Asc</option>
+                        <option value="desc">Desc</option>
+                    }
+                }
+                catch (Exception)
+                {
+                    <option value="asc" selected>Asc</option>
+                    <option value="desc">Desc</option>
+                }
+
+            </select>
+            <br>
+            <input type="submit" value="Sort">
+        </form>
+
+</div>
+<br>

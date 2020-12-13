@@ -14,6 +14,8 @@ namespace IDK.Controllers
     [Authorize]
     public class QuestionsController : Controller
     {
+        private const int PER_PAGE = 3;
+
         private Models.ApplicationDbContext db = new Models.ApplicationDbContext();
 
         // GET
@@ -31,6 +33,8 @@ namespace IDK.Controllers
             }
             return View();
         }
+
+
 
         [Authorize(Roles = "User, Editor, Admin")]
         public ActionResult Show(int id)
@@ -66,6 +70,101 @@ namespace IDK.Controllers
                 return View(q);
             }
         }
+
+        [Authorize(Roles = "User, Editor, Admin")]
+        public ActionResult ShowByCategory(int id)
+        {
+
+            var currentPage = Convert.ToInt32(Request.Params.Get("page"));
+            var dateCheck = Request.Params.Get("dateBox");
+            var ansCheck = Request.Params.Get("ansBox");
+            var dates = Request.Params.Get("dates");
+            var ans = Request.Params.Get("ans");
+            var sort = new Dictionary<string, string>();
+
+            currentPage = currentPage == 0 ? 1 : currentPage;
+            var tag = db.Tags.Find(id);
+            var questions = db.Questions.Include("Tags").Include("User").ToList().FindAll(s => s.Tags.Contains(tag));
+            int pageNr = (questions.Count() + PER_PAGE - 1 ) / PER_PAGE ;
+
+            sort.Add("dateBox", "unchecked");
+            sort.Add("dates", "unchecked");
+            sort.Add("ansBox", "unchecked");
+            sort.Add("ans", "unchecked");
+
+            if (dateCheck == null)
+            {
+                dateCheck = "unchecked";
+            }
+
+            if (dates == null)
+            {
+                dates = "unchecked";
+            }
+
+            if (ansCheck == null)
+            {
+                ansCheck = "unchecked";
+            }
+
+            if (ans == null)
+            {
+                ans = "unchecked";
+            }
+
+            if (dateCheck.Equals("dateCheck"))
+            {
+                sort["dateBox"]= "dateCheck";
+                if (dates.Equals("asc"))
+                {
+                    //questions.OrderBy(q => q.Date);
+                    sort["dates"] = "asc";
+                    questions = db.Questions.Include("Tags").Include("User").OrderBy(s => s.Date).ToList().FindAll(s => s.Tags.Contains(tag));
+                }
+                else
+                {
+                    sort["dates"] = "desc";
+                    questions = db.Questions.Include("Tags").Include("User").OrderByDescending(s => s.Date).ToList().FindAll(s => s.Tags.Contains(tag));
+                    //questions.OrderByDescending(q => q.Date);
+                }
+            }
+
+
+            if (ansCheck.Equals("ansCheck"))
+            {
+                sort["ansBox"] = "ansCheck";
+                if (ans.Equals("asc"))
+                {
+                    //questions.OrderBy(q => q.Date);
+                    sort["ans"] = "asc";
+                    questions = db.Questions.Include("Tags").Include("User").OrderBy(s => s.Answers.Count()).ToList().FindAll(s => s.Tags.Contains(tag));
+                }
+                else
+                {
+                    sort["ans"] = "desc";
+                    questions = db.Questions.Include("Tags").Include("User").OrderByDescending(s => s.Answers.Count()).ToList().FindAll(s => s.Tags.Contains(tag));
+                    //questions.OrderByDescending(q => q.Date);
+                }
+            }
+
+
+            ViewBag.Questions = questions.Skip( (currentPage - 1) * PER_PAGE ).Take(PER_PAGE);
+            ViewBag.CurrentPage = currentPage;
+            ViewBag.PageNr = pageNr;
+            ViewBag.CatId = id;
+            ViewBag.Method = "ShowByCategory/" + id;
+            ViewBag.Sort = sort;
+
+
+            return View();
+        }
+
+        //[HttpPost]
+        //public ActionResult Sort()
+        //{
+        //    Debug.WriteLine(Request.Form.Get("dates"));
+        //    return Redirect("/Home/Index");
+        //}
 
         // GET
         [Authorize(Roles = "Editor, Admin")]
@@ -220,5 +319,6 @@ namespace IDK.Controllers
             }
             return selectList;
         }
+
     }
 }

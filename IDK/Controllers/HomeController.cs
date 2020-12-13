@@ -8,8 +8,15 @@ namespace IDK.Controllers
 {
     public class HomeController : Controller
     {
+        private Models.ApplicationDbContext db = new Models.ApplicationDbContext();
+
         public ActionResult Index()
         {
+            var tags = from tag in db.Tags
+                       orderby tag.TagName
+                       select tag;
+            ViewBag.Tags = tags;
+
             return View();
         }
 
@@ -26,5 +33,6 @@ namespace IDK.Controllers
 
             return View();
         }
+
     }
 }

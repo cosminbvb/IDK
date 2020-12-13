@@ -21,6 +21,19 @@ namespace IDK.Models
         //o prop cu descrierea tag ului
 
         public virtual ICollection<Question> Questions { get; set; }
+
         //un tag corespunde mai multor intrebari
+
+
+        public override bool Equals(object obj)
+        {
+            return obj is Tag tag &&
+                   Id == tag.Id &&
+                   TagName == tag.TagName &&
+                   EqualityComparer<ICollection<Question>>.Default.Equals(Questions, tag.Questions);
+        }
+
+
     }
+
 }
