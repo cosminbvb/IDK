@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -8,6 +10,9 @@ namespace IDK.Controllers
 {
     public class HomeController : Controller
     {
+
+        //private const int PER_PAGE = 3;
+
         private Models.ApplicationDbContext db = new Models.ApplicationDbContext();
 
         public ActionResult Index()
@@ -33,6 +38,8 @@ namespace IDK.Controllers
 
             return View();
         }
+
+       
 
     }
 }

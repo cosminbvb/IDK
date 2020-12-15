@@ -258,6 +258,7 @@
     <Content Include="Views\Shared\QuestionShow.cshtml" />
     <Content Include="Views\Questions\ShowByCategory.cshtml" />
     <Content Include="Views\Shared\_SortPartial.cshtml" />
+    <Content Include="Views\Questions\Search.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

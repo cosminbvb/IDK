@@ -180,6 +180,38 @@ namespace IDK.Controllers
             return View(question);
         }
 
+        public ActionResult Search()
+        {
+            var questions = db.Questions.Include("Tags").Include("User").OrderBy(a => a.Date);
+
+            var text = Request.Params.Get("SearchString");
+            if (text != null)
+            {
+                text = text.Trim();
+                //cautam in intrebari
+                List<int> questionIds = db.Questions.Where(q => q.Title.Contains(text) || q.Content.Contains(text)).Select(a => a.Id).ToList();
+                //cautam inraspunsuri
+                List<int> answersIds = db.Answers.Where(a => a.Content.Contains(text)).Select(an => an.Id).ToList();
+
+                //lista articolelor unice
+                List<int> mergedIds = questionIds.Union(answersIds).ToList();
+
+                //lista finala
+                questions = db.Questions.Where(question => mergedIds.Contains(question.Id)).Include("Tags").Include("User").OrderBy(a => a.Date);
+            }
+
+
+            var currentPage = Convert.ToInt32(Request.Params.Get("page"));
+            currentPage = currentPage == 0 ? 1 : currentPage;
+            int pageNr = (questions.Count() + PER_PAGE - 1) / PER_PAGE;
+            ViewBag.CurrentPage = currentPage;
+            ViewBag.PageNr = pageNr;
+            ViewBag.Questions = questions.Skip((currentPage - 1) * PER_PAGE).Take(PER_PAGE);
+            ViewBag.SearchString = text;
+
+            return View();
+        }
+
         [HttpPost]
         [Authorize(Roles = "Editor, Admin")]
         public ActionResult New(Question question)

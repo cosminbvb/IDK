@@ -6,6 +6,9 @@
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    @*<style>
+        .formCautare {display : flex;}
+    </style>*@
 
 </head>
 <body>
@@ -22,6 +25,7 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("See Questions", "Index", "Questions")</li>
+
                     @if (User.IsInRole("Editor"))
                     {
                         <li>@Html.ActionLink("Ask", "New", "Questions")</li>
@@ -32,6 +36,17 @@
                         <li>@Html.ActionLink("See Tags", "Index", "Tags")</li>
                         <li>@Html.ActionLink("Add Tag", "New", "Tags")</li>
                     }
+                    @* search bar*@
+
+                    @using (Html.BeginForm("Search", "Questions", FormMethod.Get, new { style = "display : flex;" +
+                                                                                               "margin-top: 11px;"
+                                                                                      }))
+                    {
+                        @Html.TextBox("SearchString")
+                        <input type="submit" value="Search" />
+                    }
+
+                    @* search bar *@
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
