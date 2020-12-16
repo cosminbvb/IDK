@@ -191,9 +191,9 @@ namespace IDK.Controllers
                 //cautam in intrebari
                 List<int> questionIds = db.Questions.Where(q => q.Title.Contains(text) || q.Content.Contains(text)).Select(a => a.Id).ToList();
                 //cautam inraspunsuri
-                List<int> answersIds = db.Answers.Where(a => a.Content.Contains(text)).Select(an => an.Id).ToList();
+                List<int> answersIds = db.Answers.Where(a => a.Content.Contains(text)).Select(an => an.QuestionId).ToList();
 
-                //lista articolelor unice
+                //lista id uri unice
                 List<int> mergedIds = questionIds.Union(answersIds).ToList();
 
                 //lista finala
