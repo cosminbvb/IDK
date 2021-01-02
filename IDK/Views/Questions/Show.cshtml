@@ -4,7 +4,7 @@
 <br />
 <div class="panel panel-default">
     @Html.Partial("QuestionShow", Model) @*includem view ul partial care afiseaza cate o intrebare*@
-    @if (ViewBag.showButtons)
+    @if (ViewBag.modOrAdmin || ViewBag.currentUser == Model.UserId)
     {
         <div class="panel-footer">
             <a class="btn btn-success pull-left" href="/Questions/Edit/@Model.Id">Edit</a>
@@ -30,16 +30,21 @@
                 <div>
                     <p>@ans.Content</p>
                     <small class="pull-right">@ans.Date</small>
+                    <i class="glyphicon glyphicon-user"></i> <i>from</i> <strong> @ans.User.UserName </strong>
                 </div>
-                <div style="display: inline-block; float : left; margin-right: 15px">
-                    <a class="glyphicon glyphicon-pencil" href="/Answers/Edit/@ans.Id"></a> @*link catre metoda de edit*@
-                </div>
-                <div style="display: inline-block; float : left">
-                    <form method="post" action="/Answers/Delete/@ans.Id"> @*form pt delete answer*@
-                        @Html.HttpMethodOverride(HttpVerbs.Delete)
-                        <button class="glyphicon glyphicon-trash" style="border: none; background: transparent" type="submit"></button>
-                    </form>
-                </div>
+                @if (ViewBag.modOrAdmin || ViewBag.currentUser == ans.UserId)
+                {
+                    <div style="display: inline-block; float : left; margin-right: 15px">
+                        <a class="glyphicon glyphicon-pencil" href="/Answers/Edit/@ans.Id"></a> @*link catre metoda de edit*@
+                    </div>
+                    <div style="display: inline-block; float : left">
+                        <form method="post" action="/Answers/Delete/@ans.Id">
+                            @*form pt delete answer*@
+                            @Html.HttpMethodOverride(HttpVerbs.Delete)
+                            <button class="glyphicon glyphicon-trash" style="border: none; background: transparent" type="submit"></button>
+                        </form>
+                    </div>
+                }
             </div>
         </div>
         <div class="col-md-2"></div>

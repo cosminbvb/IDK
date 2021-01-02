@@ -1,4 +1,5 @@
 ﻿using IDK.Models;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,10 +23,20 @@ namespace IDK.Controllers
         public ActionResult Delete(int id)
         {
             Answer ans = db.Answers.Find(id); 
-            db.Answers.Remove(ans);
-            db.SaveChanges();
-            //ii dam redirect spre aceeasi pagina
-            return Redirect("/Questions/Show/" + ans.QuestionId); //redirect catre show ul intrebarii la care s-a sters answer ul
+            if(ans.UserId == User.Identity.GetUserId() || User.IsInRole("Admin") || User.IsInRole("Moderator"))
+            {
+                db.Answers.Remove(ans);
+                db.SaveChanges();
+                //ii dam redirect spre aceeasi pagina
+                TempData["message"] = "Answer deleted";
+                return Redirect("/Questions/Show/" + ans.QuestionId); //redirect catre show ul intrebarii la care s-a sters answer ul
+            }
+            else
+            {
+                TempData["message"] = "You can't delete somebody else's answer";
+                return Redirect("/Questions/Show/" + ans.QuestionId);
+            }
+            
         }
 
         // GET
@@ -37,10 +48,19 @@ namespace IDK.Controllers
             //il in db si il trimitem prin ViewBag
             //In plus, vrem sa trimitem si intrebarea cu restul answer urilor
             //ca utilizatorul sa vada contextul la editare
-            Answer ans = db.Answers.Find(id); 
-            Question q = db.Questions.Find(ans.QuestionId);
-            ViewBag.answerToEdit = ans;
-            return View(q);
+
+            Answer ans = db.Answers.Find(id);
+            if (ans.UserId == User.Identity.GetUserId() || User.IsInRole("Admin") || User.IsInRole("Moderator"))
+            {
+                Question q = db.Questions.Find(ans.QuestionId);
+                ViewBag.answerToEdit = ans;
+                return View(q);
+            }
+            else
+            {
+                TempData["message"] = "You can't edit somebody else's answer";
+                return Redirect("/Questions/Show/" + ans.QuestionId);
+            }
         }
 
         [HttpPut]
@@ -50,12 +70,21 @@ namespace IDK.Controllers
             try
             {
                 Answer ans = db.Answers.Find(id); //cautam answer ul dupa id
-                if (TryValidateModel(ans))
+                if (ans.UserId == User.Identity.GetUserId() || User.IsInRole("Admin") || User.IsInRole("Moderator"))
                 {
-                    ans.Content = answerEdit.Content; //ii updatam continutul cu cel din obiectul primit de la user
-                    db.SaveChanges();
+                    if (TryValidateModel(ans))
+                    {
+                        ans.Content = answerEdit.Content; //ii updatam continutul cu cel din obiectul primit de la user
+                        db.SaveChanges();
+                        TempData["message"] = "Answer edited";
+                    }
+                    return Redirect("/Questions/Show/" + answerEdit.QuestionId); //redirect catre show ul intrebarii la care s-a modificat answer ul
                 }
-                return Redirect("/Questions/Show/" + answerEdit.QuestionId); //redirect catre show ul intrebarii la care s-a modificat answer ul
+                else
+                {
+                    TempData["message"] = "You can't edit somebody else's answer";
+                    return Redirect("/Questions/Show/" + ans.QuestionId);
+                } 
             }
             catch (Exception e)
             {

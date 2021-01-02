@@ -18,7 +18,7 @@ namespace IDK.Controllers
         private Models.ApplicationDbContext db = new Models.ApplicationDbContext();
 
         // GET
-        [Authorize(Roles = "Admin")] 
+        [Authorize(Roles = "Admin")]
         // am pus doar admin pentru ca metoda index nu e folosita
         // probabil trebuia ca ce e in showbycateg sa fie in index but that s for the future me.
         public ActionResult Index()
@@ -43,28 +43,18 @@ namespace IDK.Controllers
             {
                 ViewBag.message = TempData["message"].ToString();
             }
-            bool modOrAdmin = false;
-            if(User.IsInRole("Moderator") || User.IsInRole("Admin"))
-            {
-                modOrAdmin = true;
-            }
-            if(question.UserId == User.Identity.GetUserId() || modOrAdmin)
-            {
-                ViewBag.showButtons = true;
-            }
-            else
-            {
-                ViewBag.showButtons = false;
-            }
+
+            setViewbagParameters();
 
             return View(question);
         }
-        
+
         [HttpPost]
         [Authorize(Roles = "User, Moderator, Admin")] // toti userii pot raspunde
         public ActionResult Show(Answer ans)
         {
             ans.Date = DateTime.Now; //data va fi cea din back end
+            ans.UserId = User.Identity.GetUserId();
             try
             {
                 if (ModelState.IsValid)
@@ -77,12 +67,14 @@ namespace IDK.Controllers
                 else
                 {
                     Question q = db.Questions.Find(ans.QuestionId);
+                    setViewbagParameters();
                     return View(q);
                 }
             }
             catch (Exception e)
             {
                 Question q = db.Questions.Find(ans.QuestionId);
+                setViewbagParameters();
                 return View(q);
             }
         }
@@ -101,7 +93,7 @@ namespace IDK.Controllers
             currentPage = currentPage == 0 ? 1 : currentPage;
             var tag = db.Tags.Find(id);
             var questions = db.Questions.Include("Tags").Include("User").ToList().FindAll(s => s.Tags.Contains(tag));
-            int pageNr = (questions.Count() + PER_PAGE - 1 ) / PER_PAGE ;
+            int pageNr = (questions.Count() + PER_PAGE - 1) / PER_PAGE;
 
             sort.Add("dateBox", "unchecked");
             sort.Add("dates", "unchecked");
@@ -130,7 +122,7 @@ namespace IDK.Controllers
 
             if (dateCheck.Equals("dateCheck"))
             {
-                sort["dateBox"]= "dateCheck";
+                sort["dateBox"] = "dateCheck";
                 if (dates.Equals("asc"))
                 {
                     //questions.OrderBy(q => q.Date);
@@ -162,7 +154,7 @@ namespace IDK.Controllers
                 }
             }
 
-            ViewBag.Questions = questions.Skip( (currentPage - 1) * PER_PAGE ).Take(PER_PAGE);
+            ViewBag.Questions = questions.Skip((currentPage - 1) * PER_PAGE).Take(PER_PAGE);
             ViewBag.CurrentPage = currentPage;
             ViewBag.PageNr = pageNr;
             ViewBag.CatId = id;
@@ -257,7 +249,7 @@ namespace IDK.Controllers
                 question.Tg = getAllTags();
                 return View(question);
             }
-            
+
         }
 
         // GET
@@ -265,9 +257,9 @@ namespace IDK.Controllers
         public ActionResult Edit(int id)
         {
             Question question = db.Questions.Find(id); //cautam obiectul dupa id
-            
+
             //daca user cere editarea propriei intrebari sau mods/admins cer editarea => ok, altfel nu 
-            if(question.UserId == User.Identity.GetUserId() || User.IsInRole("Admin") || User.IsInRole("Moderator"))
+            if (question.UserId == User.Identity.GetUserId() || User.IsInRole("Admin") || User.IsInRole("Moderator"))
             {
                 question.Tg = getAllTags(); //ii punem in Tg toate optiunile de taguri
 
@@ -327,7 +319,7 @@ namespace IDK.Controllers
                             question.Title = questionEdit.Title;
                             question.Content = questionEdit.Content;
                             db.SaveChanges();
-                            TempData["message"] = "Your Question has been edited";
+                            TempData["message"] = "Question edited";
                         }
                         return RedirectToAction("Show", new { id = question.Id });
                     }
@@ -340,7 +332,7 @@ namespace IDK.Controllers
                 }
                 else
                 {
-                    return View(questionEdit); 
+                    return View(questionEdit);
                 }
             }
             catch
@@ -354,11 +346,11 @@ namespace IDK.Controllers
         public ActionResult Delete(int id)
         {
             Question question = db.Questions.Find(id);
-            if(question.UserId == User.Identity.GetUserId() || User.IsInRole("Admin") || User.IsInRole("Moderator"))
+            if (question.UserId == User.Identity.GetUserId() || User.IsInRole("Admin") || User.IsInRole("Moderator"))
             {
                 db.Questions.Remove(question);
                 db.SaveChanges();
-                TempData["message"] = "Your Question was deleted";
+                TempData["message"] = "Question deleted";
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
             else
@@ -368,7 +360,7 @@ namespace IDK.Controllers
             }
 
         }
-        
+
         // HELPER METHODS:
 
         [NonAction]
@@ -378,7 +370,7 @@ namespace IDK.Controllers
 
             var selectList = new List<SelectListItem>();
             var tags = from tag in db.Tags select tag;
-            foreach(var tag in tags)
+            foreach (var tag in tags)
             {
                 var listItem = new SelectListItem();
                 listItem.Value = tag.Id.ToString();
@@ -386,6 +378,19 @@ namespace IDK.Controllers
                 selectList.Add(listItem);
             }
             return selectList;
+        }
+
+        //seteaza parametrii in Viewbag pentru a se decide daca se afiseaza butoanele de edit si delete
+        //putem face tot direct in backend si sa dam doar un bool in viewBag in functie de care
+        //sa se afiseze butoanele si probabil e mai bine asa
+        public void setViewbagParameters()
+        {
+            ViewBag.modOrAdmin = false;
+            if (User.IsInRole("Moderator") || User.IsInRole("Admin"))
+            {
+                ViewBag.modOrAdmin = true;
+            }
+            ViewBag.currentUser = User.Identity.GetUserId();
         }
 
     }
