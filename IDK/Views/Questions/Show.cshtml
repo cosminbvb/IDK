@@ -1,19 +1,22 @@
 ﻿@model IDK.Models.Question
 <br />
+<h3 style="color: darkblue">@ViewBag.Message</h3>
 <br />
 <div class="panel panel-default">
     @Html.Partial("QuestionShow", Model) @*includem view ul partial care afiseaza cate o intrebare*@
-    <div class="panel-footer">
-        <a class="btn btn-success pull-left" href="/Questions/Edit/@Model.Id">Edit</a>
-        @*facem un form pt delete question*@
-        @using (Html.BeginForm(actionName: "Delete", controllerName: "Questions", method: FormMethod.Post, routeValues: new { id = @Model.Id }))
-        {
-            @Html.HttpMethodOverride(HttpVerbs.Delete)
-            <button class="btn btn-danger pull-right" type="submit">Delete</button>
-        }
-        <div class="clearfix"></div>
-    </div>
-
+    @if (ViewBag.showButtons)
+    {
+        <div class="panel-footer">
+            <a class="btn btn-success pull-left" href="/Questions/Edit/@Model.Id">Edit</a>
+            @*facem un form pt delete question*@
+            @using (Html.BeginForm(actionName: "Delete", controllerName: "Questions", method: FormMethod.Post, routeValues: new { id = @Model.Id }))
+            {
+                @Html.HttpMethodOverride(HttpVerbs.Delete)
+                <button class="btn btn-danger pull-right" type="submit">Delete</button>
+            }
+            <div class="clearfix"></div>
+        </div>
+    }
 </div>
 
 <br />

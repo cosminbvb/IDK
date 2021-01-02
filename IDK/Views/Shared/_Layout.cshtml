@@ -24,15 +24,10 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("See Questions", "Index", "Questions")</li>
+                    <li>@Html.ActionLink("Ask", "New", "Questions")</li>
 
-                    @if (User.IsInRole("Editor"))
-                    {
-                        <li>@Html.ActionLink("Ask", "New", "Questions")</li>
-                    }
                     @if (User.IsInRole("Admin"))
                     {
-                        <li>@Html.ActionLink("Ask", "New", "Questions")</li>
                         <li>@Html.ActionLink("See Tags", "Index", "Tags")</li>
                         <li>@Html.ActionLink("Add Tag", "New", "Tags")</li>
                     }

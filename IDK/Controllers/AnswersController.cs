@@ -18,6 +18,7 @@ namespace IDK.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "User, Moderator, Admin")] // user poate sterge propria intrebare, restul pot sterge orice
         public ActionResult Delete(int id)
         {
             Answer ans = db.Answers.Find(id); 
@@ -28,6 +29,7 @@ namespace IDK.Controllers
         }
 
         // GET
+        [Authorize(Roles = "User, Moderator, Admin")] // toti userii isi pot modifica propriile raspunsuri
         public ActionResult Edit(int id)
         {
             //aici nu sunt sigur ca e bine pentru ca probabil ar trebui facut ceva in front end decat inca un request idk
@@ -42,6 +44,7 @@ namespace IDK.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "User, Moderator, Admin")] // toti userii isi pot modifica propriile raspunsuri
         public ActionResult Edit(int id, Answer answerEdit)
         {
             try

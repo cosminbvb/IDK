@@ -11,7 +11,6 @@ using Microsoft.AspNet.Identity;
 
 namespace IDK.Controllers
 {
-    [Authorize]
     public class QuestionsController : Controller
     {
         private const int PER_PAGE = 3;
@@ -19,7 +18,9 @@ namespace IDK.Controllers
         private Models.ApplicationDbContext db = new Models.ApplicationDbContext();
 
         // GET
-        [Authorize(Roles = "User, Editor, Admin")]
+        [Authorize(Roles = "Admin")] 
+        // am pus doar admin pentru ca metoda index nu e folosita
+        // probabil trebuia ca ce e in showbycateg sa fie in index but that s for the future me.
         public ActionResult Index()
         {
             // https://docs.microsoft.com/en-us/ef/ef6/querying/related-data
@@ -34,18 +35,33 @@ namespace IDK.Controllers
             return View();
         }
 
-
-
-        [Authorize(Roles = "User, Editor, Admin")]
         public ActionResult Show(int id)
         {
             //cautam intrebarea dupa id
             Question question = db.Questions.Find(id);
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.message = TempData["message"].ToString();
+            }
+            bool modOrAdmin = false;
+            if(User.IsInRole("Moderator") || User.IsInRole("Admin"))
+            {
+                modOrAdmin = true;
+            }
+            if(question.UserId == User.Identity.GetUserId() || modOrAdmin)
+            {
+                ViewBag.showButtons = true;
+            }
+            else
+            {
+                ViewBag.showButtons = false;
+            }
+
             return View(question);
         }
         
         [HttpPost]
-        [Authorize(Roles = "User, Editor, Admin")]
+        [Authorize(Roles = "User, Moderator, Admin")] // toti userii pot raspunde
         public ActionResult Show(Answer ans)
         {
             ans.Date = DateTime.Now; //data va fi cea din back end
@@ -71,7 +87,7 @@ namespace IDK.Controllers
             }
         }
 
-        [Authorize(Roles = "User, Editor, Admin")]
+        // toata lumea poate vedea intrebarile
         public ActionResult ShowByCategory(int id)
         {
 
@@ -129,7 +145,6 @@ namespace IDK.Controllers
                 }
             }
 
-
             if (ansCheck.Equals("ansCheck"))
             {
                 sort["ansBox"] = "ansCheck";
@@ -147,7 +162,6 @@ namespace IDK.Controllers
                 }
             }
 
-
             ViewBag.Questions = questions.Skip( (currentPage - 1) * PER_PAGE ).Take(PER_PAGE);
             ViewBag.CurrentPage = currentPage;
             ViewBag.PageNr = pageNr;
@@ -155,19 +169,11 @@ namespace IDK.Controllers
             ViewBag.Method = "ShowByCategory/" + id;
             ViewBag.Sort = sort;
 
-
             return View();
         }
 
-        //[HttpPost]
-        //public ActionResult Sort()
-        //{
-        //    Debug.WriteLine(Request.Form.Get("dates"));
-        //    return Redirect("/Home/Index");
-        //}
-
         // GET
-        [Authorize(Roles = "Editor, Admin")]
+        [Authorize(Roles = "User, Moderator, Admin")] // toti userii pot intreba 
         public ActionResult New()
         {
             //cream un nou obiect de tip question si ii punem in proprietatea Tg toate
@@ -180,6 +186,7 @@ namespace IDK.Controllers
             return View(question);
         }
 
+        // toata lumea poate folosi search engine ul
         public ActionResult Search()
         {
             var questions = db.Questions.Include("Tags").Include("User").OrderBy(a => a.Date);
@@ -213,7 +220,7 @@ namespace IDK.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Editor, Admin")]
+        [Authorize(Roles = "User, Moderator, Admin")] // toti userii pot intreba 
         public ActionResult New(Question question)
         {
             question.Tags = new Collection<Tag>();
@@ -235,7 +242,7 @@ namespace IDK.Controllers
                     db.Questions.Add(question);
                     db.SaveChanges();
                     TempData["message"] = "Your Question was posted";
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Show", new { id = question.Id });
                 }
                 else
                 {
@@ -254,31 +261,43 @@ namespace IDK.Controllers
         }
 
         // GET
-        [Authorize(Roles = "Editor, Admin")]
+        [Authorize(Roles = "User, Moderator, Admin")] // user poate modifica propria intrebare, restul pot modifica orice
         public ActionResult Edit(int id)
         {
             Question question = db.Questions.Find(id); //cautam obiectul dupa id
-            question.Tg = getAllTags(); //ii punem in Tg toate optiunile de taguri
-
-            //deoarece "SelectedTags" este un array de intregi(array - ul in care stocam id - urile tagurilor)
-            //nu putem face Add direct in acest array deoarece trebuie sa stim de la inceput dimensiunea lui. Asadar, exista doua variante: 
-            //1. Aflam dimensiunea cu ajutorul metodei count, apoi parcurgem si pentru fiecare pozitie din array adaugam un nou id de tag. 
-            //2. Metoda de mai jos - cream o lista noua, adaugam pe rand taguri dupa id, in final aplicam metoda ToArray pentru a converti lista in array 
-            //si pentru a pasa toata lista array-ului initial "SelectedTags"
-
-            List<int> currentSelection = new List<int>(); //aici retinem selectia actuala, inainte de modificare (id urile tagurilor)
-
-            foreach (var tag in question.Tags)
+            
+            //daca user cere editarea propriei intrebari sau mods/admins cer editarea => ok, altfel nu 
+            if(question.UserId == User.Identity.GetUserId() || User.IsInRole("Admin") || User.IsInRole("Moderator"))
             {
-                currentSelection.Add(tag.Id); //adaugam tagurile selectate inainte de editare in currentSelection
-            }
-            question.SelectedTags = currentSelection.ToArray();//punem currentSelection in SelectedTags ca utilizatorul sa vada ce taguri selectate are
+                question.Tg = getAllTags(); //ii punem in Tg toate optiunile de taguri
 
-            return View(question);
+                //deoarece "SelectedTags" este un array de intregi(array - ul in care stocam id - urile tagurilor)
+                //nu putem face Add direct in acest array deoarece trebuie sa stim de la inceput dimensiunea lui. Asadar, exista doua variante: 
+                //1. Aflam dimensiunea cu ajutorul metodei count, apoi parcurgem si pentru fiecare pozitie din array adaugam un nou id de tag. 
+                //2. Metoda de mai jos - cream o lista noua, adaugam pe rand taguri dupa id, in final aplicam metoda ToArray pentru a converti lista in array 
+                //si pentru a pasa toata lista array-ului initial "SelectedTags"
+
+                List<int> currentSelection = new List<int>(); //aici retinem selectia actuala, inainte de modificare (id urile tagurilor)
+
+                foreach (var tag in question.Tags)
+                {
+                    currentSelection.Add(tag.Id); //adaugam tagurile selectate inainte de editare in currentSelection
+                }
+                question.SelectedTags = currentSelection.ToArray();//punem currentSelection in SelectedTags ca utilizatorul sa vada ce taguri selectate are
+
+                return View(question);
+            }
+            else
+            {
+                TempData["message"] = "You can't edit somebody else's question";
+                return RedirectToAction("Index");
+            }
+
+
         }
 
         [HttpPut]
-        [Authorize(Roles = "Editor, Admin")]
+        [Authorize(Roles = "User, Moderator, Admin")] // user poate modifica propria intrebare, restul pot modifica orice
         public ActionResult Edit(int id, Question questionEdit)
         {
             questionEdit.Tg = getAllTags();
@@ -287,29 +306,37 @@ namespace IDK.Controllers
                 if (ModelState.IsValid)
                 {
                     Question question = db.Questions.Find(id); //cautam intrebarea dupa id
-                    if (TryUpdateModel(question))
+                    if (question.UserId == User.Identity.GetUserId() || User.IsInRole("Admin") || User.IsInRole("Moderator"))
                     {
-                        foreach (Tag currentTag in question.Tags.ToList())
+                        if (TryUpdateModel(question))
                         {
-                            //inainte sa adaugam noile taguri trebuie sa le stergem pe cele vechi
-                            question.Tags.Remove(currentTag);
+                            foreach (Tag currentTag in question.Tags.ToList())
+                            {
+                                //inainte sa adaugam noile taguri trebuie sa le stergem pe cele vechi
+                                question.Tags.Remove(currentTag);
+                            }
+
+                            foreach (var selectedTagId in questionEdit.SelectedTags)
+                            {
+                                Tag dbTag = db.Tags.Find(selectedTagId);
+                                question.Tags.Add(dbTag);
+                                //adaugam noile taguri
+                            }
+
+                            //updatam si titlul si continutul
+                            question.Title = questionEdit.Title;
+                            question.Content = questionEdit.Content;
+                            db.SaveChanges();
+                            TempData["message"] = "Your Question has been edited";
                         }
-
-                        foreach (var selectedTagId in questionEdit.SelectedTags)
-                        {
-                            Tag dbTag = db.Tags.Find(selectedTagId);
-                            question.Tags.Add(dbTag);
-                            //adaugam noile taguri
-                        }
-
-                        //updatam si titlul si continutul
-                        question.Title = questionEdit.Title;
-                        question.Content = questionEdit.Content;
-                        db.SaveChanges();
-
-                        TempData["message"] = "Your Question has been edited";
+                        return RedirectToAction("Show", new { id = question.Id });
                     }
-                    return RedirectToAction("Index");
+                    else
+                    {
+                        TempData["message"] = "You can't edit somebody else's question";
+                        return RedirectToAction("Show", new { id = question.Id });
+                    }
+
                 }
                 else
                 {
@@ -323,14 +350,23 @@ namespace IDK.Controllers
         }
 
         [HttpDelete]
-        [Authorize(Roles = "Editor, Admin")]
+        [Authorize(Roles = "User, Moderator, Admin")] // user isi poate sterge propria intrebare, restul pot sterge orice
         public ActionResult Delete(int id)
         {
             Question question = db.Questions.Find(id);
-            db.Questions.Remove(question);
-            db.SaveChanges();
-            TempData["message"] = "Your Question was deleted";
-            return RedirectToAction("Index");
+            if(question.UserId == User.Identity.GetUserId() || User.IsInRole("Admin") || User.IsInRole("Moderator"))
+            {
+                db.Questions.Remove(question);
+                db.SaveChanges();
+                TempData["message"] = "Your Question was deleted";
+                return RedirectToAction("Index", "Home", new { area = "" });
+            }
+            else
+            {
+                TempData["message"] = "You can't delete somebody else's question";
+                return RedirectToAction("Show", new { id = question.Id });
+            }
+
         }
         
         // HELPER METHODS:
