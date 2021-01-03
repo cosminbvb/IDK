@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Data.Entity;
 using System.Collections.ObjectModel;
 using Microsoft.AspNet.Identity;
+using Microsoft.Security.Application;
 
 namespace IDK.Controllers
 {
@@ -212,6 +213,7 @@ namespace IDK.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [Authorize(Roles = "User, Moderator, Admin")] // toti userii pot intreba 
         public ActionResult New(Question question)
         {
@@ -222,6 +224,8 @@ namespace IDK.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    //Protect content from XSS
+                    question.Content = Sanitizer.GetSafeHtmlFragment(question.Content);
                     foreach (var selectedTagId in question.SelectedTags)
                     {
                         //pentru fiecare tag selectat il cautam il baza de date si il adaugam la proprietatea
@@ -289,6 +293,7 @@ namespace IDK.Controllers
         }
 
         [HttpPut]
+        [ValidateInput(false)]
         [Authorize(Roles = "User, Moderator, Admin")] // user poate modifica propria intrebare, restul pot modifica orice
         public ActionResult Edit(int id, Question questionEdit)
         {
@@ -302,6 +307,8 @@ namespace IDK.Controllers
                     {
                         if (TryUpdateModel(question))
                         {
+                            //Protect content from XSS
+                            questionEdit.Content = Sanitizer.GetSafeHtmlFragment(questionEdit.Content);
                             foreach (Tag currentTag in question.Tags.ToList())
                             {
                                 //inainte sa adaugam noile taguri trebuie sa le stergem pe cele vechi

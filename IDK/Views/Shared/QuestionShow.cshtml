@@ -1,6 +1,6 @@
 ﻿<div class="panel-heading" style="font-weight:bold">@Model.Title</div>
 <div class="panel-body">
-    <div>@Model.Content</div>
+    @Html.Raw(Model.Content)
     <br />
     <span class="label label-success">@Model.Date</span>
     <br /><br />
