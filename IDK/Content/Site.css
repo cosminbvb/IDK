@@ -1,8 +1,9 @@
-﻿body {
+﻿@import url('https://fonts.googleapis.com/css2?family=Monoton&display=swap');
+body {
     background-color: #06090f;
     padding-top: 50px;
     padding-bottom: 20px;
-    color:white;
+    color:whitesmoke;
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -40,11 +41,13 @@ textarea {
 }
 
 .navbar-inverse .navbar-brand {
-    color: white;
+    color: whitesmoke;
+    font-family: Monoton;
+    font-size: 3rem;
 }
 
 .navbar-inverse .navbar-nav > li > a {
-    color: white;
+    color: whitesmoke;
 }
 
 #SearchString {
@@ -88,4 +91,8 @@ hr{
 
 .btn-success {
     background-color: #238636;
+}
+
+.modal{
+    color:black;
 }
