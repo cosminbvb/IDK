@@ -2,10 +2,8 @@
 @model Question
 
 <div class="sortare">
-    <p>sort by:</p>
-    
-
-
+    <p>Sort by:</p>
+   
     <form style="display:contents" action="/Questions/@ViewBag.Method?dateBox=@(ViewBag.Sort["dateBox"])">
     @*<form style="display:contents" action="/Questions/@ViewBag.Method">*@
 
@@ -13,7 +11,7 @@
 
             @*<input type="checkbox" id="dateBox" name="dateBox" value="dateCheck">*@
             <label for="dates">Date:</label>
-            <select name="dates" id="dates">
+            <select name="dates" id="dates" style="background-color:#0d1117">
                 @try
                 {
                     if (ViewBag.Sort["dates"].Equals("desc"))
@@ -39,7 +37,7 @@
             <input type="checkbox" id="ansBox" name="ansBox" value="ansCheck"  @((ViewBag.Sort["ansBox"] == "ansCheck") ? "checked" : "") >
 
             <label for="ansBox">Number of answers:</label>
-            <select name="ans" id="ans">
+            <select name="ans" id="ans" style="background-color:#0d1117">
                 @try
                 {
                     if (ViewBag.Sort["ans"].Equals("desc"))
@@ -61,7 +59,7 @@
 
             </select>
             <br>
-            <input type="submit" value="Sort">
+            <input type="submit" value="Sort" class="btn btn-success">
         </form>
 
 </div>

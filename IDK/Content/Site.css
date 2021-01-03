@@ -1,6 +1,8 @@
 ﻿body {
+    background-color: #06090f;
     padding-top: 50px;
     padding-bottom: 20px;
+    color:white;
 }
 
 /* Set padding to keep content from hitting the edges */
@@ -24,15 +26,66 @@ textarea {
 }
 
 .navbar {
-    background-color: #dadada;
+    background-color: #161b22;
     border: none;
     box-shadow: 0 6px 12px #dadada;
 }
 
-.navbar a {
-    color: #2c2c2c;
+.navbar-inverse .navbar-brand:hover {
+    color: darkgrey;
 }
 
-.navbar a:hover {
-    color: #5cb85c;
+.navbar-inverse .navbar-nav > li > a:hover {
+    color: darkgrey;
+}
+
+.navbar-inverse .navbar-brand {
+    color: white;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: white;
+}
+
+#SearchString {
+    background-color: #06090f;
+}
+
+.navbar{
+    box-shadow:none;
+}
+
+.panel-default{
+    border-color:darkblue;
+}
+
+.panel-default > .panel-heading {
+    color: #ffffff;
+    background-color: #0d1117;
+    border:none;
+}
+
+.panel-heading {
+    background-color: #0d1117;
+}
+
+.panel-body {
+    background-color: #0d1117;
+}
+
+.panel-footer {
+    background-color: #0d1117;
+    border:none;
+}
+
+.panel {
+    background-color: #0d1117;
+}
+
+hr{
+    border-top: 1px solid #808080;
+}
+
+.btn-success {
+    background-color: #238636;
 }

@@ -23,7 +23,7 @@
                 @Html.ActionLink("IDK", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
+                <ul class="nav navbar-nav" style="display:flex; align-items:center">
                     <li>@Html.ActionLink("Ask", "New", "Questions")</li>
 
                     @if (User.IsInRole("Admin"))
@@ -33,11 +33,10 @@
                     }
                     @* search bar*@
 
-                    @using (Html.BeginForm("Search", "Questions", FormMethod.Get, new { style = "display : flex;" +
-                                                                                               "margin-top: 11px;"
-                                                                                      }))
+                    @using (Html.BeginForm("Search", "Questions", FormMethod.Get))
                     {
-                        @Html.TextBox("SearchString")
+                        <input id="SearchString" name="SearchString" type="text" value="" placeholder="Search...">
+                        @*Html.TextBox("SearchString")*@
                         @*<input type="submit" value="Search" />*@
                         <button class="btn btn-success" type="submit">Search</button>
 
