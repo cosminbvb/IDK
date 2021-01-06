@@ -433,10 +433,14 @@ namespace IDK.Controllers
         [Authorize(Roles = "User, Moderator, Admin")]
         public ActionResult Profile(string id)
         {
-            ViewBag.Email = db.Users.Find(id).Email;
-            ViewBag.Name = db.Users.Find(id).Name;
+            string id_local = User.Identity.GetUserId();
+            if (id != id_local)
+            {
+                return Redirect("/Profile/" + id_local);
+            }
+            ViewBag.Email = db.Users.Find(id_local).Email;
+            ViewBag.Name = db.Users.Find(id_local).Name;
 
-            //Debug.WriteLine(id); 
             return View();
         }
 
@@ -444,7 +448,6 @@ namespace IDK.Controllers
         public ActionResult Profile(string email, string name)
         {
             string id = User.Identity.GetUserId();
-
             try
             {
                 var user = db.Users.Find(User.Identity.GetUserId());

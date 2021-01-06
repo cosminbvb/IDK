@@ -5,7 +5,7 @@
 @using (Html.BeginForm(actionName: "Edit", controllerName: "Profile"))
 {
     @Html.HttpMethodOverride(HttpVerbs.Put)
-    <h2 style="display:inline">Your profile  </h2>
+    <h2 style="display:inline-block; margin-top:0.7em">Your profile  </h2>
     @*@Html.ActionLink("settings", "Index", "Manage", null ,new {@class = "settingsBtn" });*@
     <a style="display:inline" href="/Manage"><img class="settingsBtn" src="..\Content\images\settings.png"></img></a>
     <br>
