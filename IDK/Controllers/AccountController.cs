@@ -9,12 +9,17 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using IDK.Models;
+using System.Diagnostics;
 
 namespace IDK.Controllers
 {
+
     [Authorize]
     public class AccountController : Controller
     {
+
+        private Models.ApplicationDbContext db = new Models.ApplicationDbContext();
+
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 
@@ -151,7 +156,7 @@ namespace IDK.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, Name = model.Name };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -425,6 +430,40 @@ namespace IDK.Controllers
             base.Dispose(disposing);
         }
 
+        [Authorize(Roles = "User, Moderator, Admin")]
+        public ActionResult Profile(string id)
+        {
+            ViewBag.Email = db.Users.Find(id).Email;
+            ViewBag.Name = db.Users.Find(id).Name;
+
+            //Debug.WriteLine(id); 
+            return View();
+        }
+
+        [HttpPut]
+        public ActionResult Profile(string email, string name)
+        {
+            string id = User.Identity.GetUserId();
+
+            try
+            {
+                var user = db.Users.Find(User.Identity.GetUserId());
+
+                user.Email = email;
+                user.Name = name;
+                db.SaveChanges();
+                TempData["message"] = "changes saved";
+                    
+                return Redirect("/Profile/" + id); 
+                
+            }
+            catch (Exception e)
+            {
+                return Redirect("/Profile/" + id);
+            }
+
+        }
+
         #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
@@ -484,4 +523,6 @@ namespace IDK.Controllers
         }
         #endregion
     }
+
+
 }

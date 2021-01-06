@@ -1,0 +1,15 @@
+﻿@using (Html.BeginForm(actionName: "Edit", controllerName: "Profile"))
+{
+    @Html.HttpMethodOverride(HttpVerbs.Put)
+    <h2>Your profile:</h2>
+    <p>email : </p>
+    @*<textarea name="email">@ViewBag.Email</textarea>*@
+    <input style="color:black" name="email" type="text" value="@ViewBag.Email">
+    <br>
+    <p>name : </p>
+    @*<textarea name="name">@ViewBag.Name</textarea>*@
+    <input style="color:black" name="name" type="text" value="@ViewBag.Name">
+    <br>
+    <br>
+    <button class="btn btn-success"  type="submit">Save</button>
+}

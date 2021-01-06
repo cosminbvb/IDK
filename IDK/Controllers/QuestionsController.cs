@@ -190,7 +190,7 @@ namespace IDK.Controllers
                 text = text.Trim();
                 //cautam in intrebari
                 List<int> questionIds = db.Questions.Where(q => q.Title.Contains(text) || q.Content.Contains(text)).Select(a => a.Id).ToList();
-                //cautam inraspunsuri
+                //cautam in raspunsuri
                 List<int> answersIds = db.Answers.Where(a => a.Content.Contains(text)).Select(an => an.QuestionId).ToList();
 
                 //lista id uri unice
