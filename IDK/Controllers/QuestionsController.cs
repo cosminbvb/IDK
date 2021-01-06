@@ -41,17 +41,6 @@ namespace IDK.Controllers
         {
             //cautam intrebarea dupa id
             Question question = db.Questions.Find(id);
-<<<<<<< Updated upstream
-=======
-            if (TempData.ContainsKey("message"))
-            {
-                ViewBag.message = TempData["message"].ToString();
-            }
-
-            setViewbagParameters();
-            ViewBag.Url = Request.Url.Scheme + "://" + Request.Url.Authority + Request.ApplicationPath.TrimEnd('/') + "/";
-
->>>>>>> Stashed changes
             return View(question);
         }
         
