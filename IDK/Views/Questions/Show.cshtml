@@ -28,9 +28,10 @@
             <div class="col-md-2"></div>
             <div class="col-md-8">
                 <div>
-                    <p>@ans.Content</p>
+                    @Html.Raw(ans.Content)
+                    <br /><br />
                     <small class="pull-right">@ans.Date</small>
-                    <i class="glyphicon glyphicon-user"></i> <i>from</i> <strong> @ans.User.UserName </strong>
+                    <i class="glyphicon glyphicon-user"></i> <i>from</i> <strong> @ans.User.Name </strong>
                 </div>
                 @if (ViewBag.modOrAdmin || ViewBag.currentUser == ans.UserId)
                 {
@@ -55,9 +56,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-2">
-        </div>
-        <div class="col-md-8">
+        <div>
             <div class="panel">
                 @*form pt adaugarea unui nou answer*@
                 <form method="post" action="/Questions/Show/@Model.Id">
@@ -65,7 +64,7 @@
                         <input type="hidden" name="QuestionId" value="@Model.Id" />
                         <label>Your answer</label>
                         <br />
-                        <textarea class="form-control" name="Content"></textarea>
+                        <textarea class="form-control summernote" name="Content" values="@Model.Content"></textarea>
                         @Html.ValidationMessage("Content", null, new { @class = "text-danger" })
                         <br />
                         <button class="btn btn-success " type="submit">Submit</button>
@@ -73,6 +72,5 @@
                 </form>
             </div>
         </div>
-        <div class="col-md-2"></div>
     </div>
 </div>

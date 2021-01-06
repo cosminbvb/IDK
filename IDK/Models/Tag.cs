@@ -20,6 +20,8 @@ namespace IDK.Models
         //o prop cu numarul de aparitii ale tagului
         //o prop cu descrierea tag ului
 
+        public string Description { get; set; }
+
         public virtual ICollection<Question> Questions { get; set; }
 
         //un tag corespunde mai multor intrebari

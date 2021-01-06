@@ -31,7 +31,7 @@ altfel, facem un form in care punem continutul actual al raspunsului
                 <div class="col-md-2"></div>
                 <div class="col-md-8">
                     <div>
-                        <p>@ans.Content</p>
+                        @Html.Raw(ans.Content)
                         <small class="pull-right">@ans.Date</small>
                     </div>
                     <div style="display: inline-block; float : left; margin-right: 15px">
@@ -53,9 +53,7 @@ altfel, facem un form in care punem continutul actual al raspunsului
     {
         <div class="container">
             <div class="row">
-                <div class="col-md-2">
-                </div>
-                <div class="col-md-8">
+                <div>
                     <div class="panel">
                         <form method="post" action="/Answers/Edit/@ViewBag.answerToEdit.Id">
                             @Html.HttpMethodOverride(HttpVerbs.Put)
@@ -63,14 +61,13 @@ altfel, facem un form in care punem continutul actual al raspunsului
                                 <input type="hidden" name="QuestionId" value="@Model.Id" />
                                 <label>Your answer</label>
                                 <br />
-                                <textarea class="form-control" name="Content">@ViewBag.answerToEdit.Content</textarea>
+                                <textarea class="form-control summernote" name="Content">@ViewBag.answerToEdit.Content</textarea>
                                 <br />
                                 <button class="btn btn-success " type="submit">Submit</button>
                             </div>
                         </form>
                     </div>
                 </div>
-                <div class="col-md-2"></div>
             </div>
         </div>
     }

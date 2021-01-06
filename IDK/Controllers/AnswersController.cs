@@ -1,5 +1,6 @@
 ﻿using IDK.Models;
 using Microsoft.AspNet.Identity;
+using Microsoft.Security.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,6 +65,7 @@ namespace IDK.Controllers
         }
 
         [HttpPut]
+        [ValidateInput(false)]
         [Authorize(Roles = "User, Moderator, Admin")] // toti userii isi pot modifica propriile raspunsuri
         public ActionResult Edit(int id, Answer answerEdit)
         {
@@ -74,6 +76,7 @@ namespace IDK.Controllers
                 {
                     if (TryValidateModel(ans))
                     {
+                        answerEdit.Content = Sanitizer.GetSafeHtmlFragment(answerEdit.Content);
                         ans.Content = answerEdit.Content; //ii updatam continutul cu cel din obiectul primit de la user
                         db.SaveChanges();
                         TempData["message"] = "Answer edited";

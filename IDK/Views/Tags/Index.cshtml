@@ -9,6 +9,9 @@
 {
     @Html.Label("TagName", "Tag Name")
     <p>@tag.TagName</p>
+    @Html.Label("Description", "Description")
+    @Html.Raw(tag.Description)
+    <br />
     <a class="btn btn-success" href="/Tags/Show/@tag.Id">Show</a>
     <a class="btn btn-success" href="/Tags/Edit/@tag.Id">Edit</a>
     <br />

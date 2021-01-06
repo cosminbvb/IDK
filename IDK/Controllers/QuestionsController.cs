@@ -51,6 +51,7 @@ namespace IDK.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         [Authorize(Roles = "User, Moderator, Admin")] // toti userii pot raspunde
         public ActionResult Show(Answer ans)
         {
@@ -60,6 +61,7 @@ namespace IDK.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    ans.Content = Sanitizer.GetSafeHtmlFragment(ans.Content);
                     //incercam sa adaugam answer ul primit de la user
                     db.Answers.Add(ans);
                     db.SaveChanges();

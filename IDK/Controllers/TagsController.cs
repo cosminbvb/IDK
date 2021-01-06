@@ -1,4 +1,5 @@
 ﻿using IDK.Models;
+using Microsoft.Security.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,12 +34,14 @@ namespace IDK.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult New(Tag tag)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
+                    tag.Description = Sanitizer.GetSafeHtmlFragment(tag.Description);
                     db.Tags.Add(tag);
                     db.SaveChanges();
                     TempData["message"] = "Tag submited";
@@ -80,6 +83,7 @@ namespace IDK.Controllers
         }
 
         [HttpPut]
+        [ValidateInput(false)]
         public ActionResult Edit(int id, Tag tagEdit)
         {
             try
@@ -87,7 +91,9 @@ namespace IDK.Controllers
                 Tag tag = db.Tags.Find(id);
                 if (TryUpdateModel(tag))
                 {
+                    tagEdit.Description = Sanitizer.GetSafeHtmlFragment(tagEdit.Description);
                     tag.TagName = tagEdit.TagName;
+                    tag.Description = tagEdit.Description;
                     db.SaveChanges();
                     TempData["message"] = "Tag edited";
                     return RedirectToAction("Index");

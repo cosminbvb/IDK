@@ -5,6 +5,9 @@
 {
     @Html.Label("TagName", "")
     <p>@tag.TagName</p>
+    @Html.Label("Description", "")
+    @Html.Raw(tag.Description)
+    <br />
     <a class="btn btn-success" href="/Questions/ShowByCategory/@tag.Id">Questions</a>
     <br />
     <hr />
