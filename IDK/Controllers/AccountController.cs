@@ -425,6 +425,60 @@ namespace IDK.Controllers
             base.Dispose(disposing);
         }
 
+<<<<<<< Updated upstream
+=======
+        [Authorize(Roles = "User, Moderator, Admin")]
+        public ActionResult Profile(string id)
+        {
+            ViewBag.Email = db.Users.Find(id).Email;
+            ViewBag.Name = db.Users.Find(id).Name;
+
+            if (id == User.Identity.GetUserId())
+            {
+                ViewBag.Title = "Your profile";
+            }
+            else
+            {
+                ViewBag.Title = db.Users.Find(id).Name + "'s profile";
+            }
+
+            //Debug.WriteLine(id); 
+            return View();
+        }
+
+        [HttpPut]
+        public ActionResult Profile(string id, string email, string name)
+        {
+            string id1 = User.Identity.GetUserId();
+
+            //if(id == id1)
+            //{
+            //    ViewBag.Title = "Your profile";
+            //}
+            //else
+            //{
+            //    ViewBag.Title = db.Users.Find(id).Name + "'s profile";
+            //}
+            try
+            {
+                var user = db.Users.Find(User.Identity.GetUserId());
+
+                user.Email = email;
+                user.Name = name;
+                db.SaveChanges();
+                TempData["message"] = "changes saved";
+                    
+                return Redirect("/Profile/" + id1); 
+                
+            }
+            catch (Exception e)
+            {
+                return Redirect("/Profile/" + id1);
+            }
+
+        }
+
+>>>>>>> Stashed changes
         #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
