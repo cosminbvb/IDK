@@ -5,11 +5,9 @@
     <p>Sort by:</p>
    
     <form style="display:contents" action="/Questions/@ViewBag.Method?dateBox=@(ViewBag.Sort["dateBox"])">
-    @*<form style="display:contents" action="/Questions/@ViewBag.Method">*@
+        <div class="form-group">
+            <input type="checkbox" id="dateBox" name="dateBox" value="dateCheck" @((ViewBag.Sort["dateBox"] == "dateCheck") ? "checked" : "")>
 
-            <input type="checkbox" id="dateBox" name="dateBox" value="dateCheck" @((ViewBag.Sort["dateBox"] == "dateCheck") ? "checked" : "")> 
-
-            @*<input type="checkbox" id="dateBox" name="dateBox" value="dateCheck">*@
             <label for="dates">Date:</label>
             <select name="dates" id="dates" style="background-color:#0d1117">
                 @try
@@ -32,9 +30,9 @@
                 }
 
             </select>
-            <br>
-
-            <input type="checkbox" id="ansBox" name="ansBox" value="ansCheck"  @((ViewBag.Sort["ansBox"] == "ansCheck") ? "checked" : "") >
+        </div>
+        <div class="form-group">
+            <input type="checkbox" id="ansBox" name="ansBox" value="ansCheck" @((ViewBag.Sort["ansBox"] == "ansCheck") ? "checked" : "")>
 
             <label for="ansBox">Number of answers:</label>
             <select name="ans" id="ans" style="background-color:#0d1117">
@@ -60,7 +58,8 @@
             </select>
             <br>
             <input type="submit" value="Sort" class="btn btn-success">
-        </form>
+            </div>
+    </form>
 
 </div>
 <br>
